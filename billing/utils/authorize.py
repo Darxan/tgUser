@@ -1,15 +1,10 @@
 import os
 from base64 import standard_b64decode
 
-from ..models import PaymentMethods
 
-# MERCHANT = '6030eac1a10b214d8d11d5ac'
-# PROD_KEY = 'mz83DdSgfM1@DG&Q3Tabxcp2omWBp&9O&wOr'
-# TEST_KEY = 'nJFUzTTNxuv?NgMxIIvAygFjTVCpkMivp6Oy'
-# O'rmon texnoservis transit schet
-MERCHANT = '6034a109a10b214d8d120d34'
-PROD_KEY = '@3%tSV#CXyyKktKQgW96S@st#EXb#MCDW?K1'
-TEST_KEY = 'amD&DBEFG25#gSuJzUapx5u99#GGgodkR3pj'
+MERCHANT = ''
+PROD_KEY = ''
+TEST_KEY = ''
 
 
 class MerchantAPI:

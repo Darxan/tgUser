@@ -3,9 +3,10 @@ from datetime import datetime
 
 from django.utils import timezone
 
+from user.models import TgUser
 from .utils.format import BaseFormat
 from .utils.pstatus import PaycomStatus
-from ..models import BalanceTransaction, User
+from ..models import BalanceTransaction
 
 
 class Transactions(PaycomStatus):
@@ -27,17 +28,13 @@ class Transactions(PaycomStatus):
             return False
 
     def save_transaction(self):
-        # order = OrderModel.objects.get(order_id=self.params['account']['id'])
-        # order.state = UserController.STATE_WAITING_PAY
-        # order.save()
         """
-            Bizda order mavjud bolmaganligi uchun order statusi update qilinmayapti
             Comment:
             Save transaction with state = 1 and set order state STATE_WAITING_PAY = 1
             self.transaction = new transaction
         """
         data = {
-            'user': User.objects.get(stir=self.params['account']['id']),  # inn
+            'user': TgUser.objects.get(tg_id=self.params['account']['user_id']),
             'transaction_id': self.paycom_transaction_id,
             'time_millisecond': self.params['time'],
             'amount': self.params['amount'] / 100,
@@ -59,14 +56,14 @@ class Transactions(PaycomStatus):
             return False
 
     def return_transaction_details(self, field=None):
-
         """
             Comment: state, create_time|perform_time, transaction, receivers
         """
         if field is None:
             field = 'created_at'
         _datetime = getattr(self.transaction, field)
-        time_in_milliseconds = self.formatter.millisecond_timestamp_from_utc_to_time_zone(utc_datetime=_datetime)
+        time_in_milliseconds = self.formatter.millisecond_timestamp_from_utc_to_time_zone(
+            utc_datetime=_datetime)
         response = {
             'result': {
                 'state': self.transaction.state,
@@ -80,8 +77,7 @@ class Transactions(PaycomStatus):
         return json.dumps(response)
 
     def cancel_transaction(self, reason, state=None):
-        print("reason", reason)
-        print("state", state)
+
         if state is None:
             state = self.STATE_CANCELLED
         self.transaction.state = state
@@ -92,6 +88,7 @@ class Transactions(PaycomStatus):
 
     def complete_transaction(self):
         self.transaction.state = self.STATE_COMPLETED
+        print("self.transaction.state", self.transaction.state)
         self.transaction.perform_time = timezone.now()
         self.transaction.save()
 

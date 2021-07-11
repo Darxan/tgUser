@@ -1,7 +1,8 @@
+from user.models import TgUser
 from .utils.exception import PaycomException
 from .utils.format import BaseFormat
 
-from ..models import BalanceTransaction, User, AccountBalance
+from ..models import BalanceTransaction
 
 
 class UserController:
@@ -18,8 +19,7 @@ class UserController:
 
     def validate(self, account_params):
         account = account_params['account']
-        id = 'id'
-        # type_str = 'type'
+        id = 'user_id'
         amount_str = 'amount'
 
         if id not in account or account[id] == '':
@@ -48,15 +48,12 @@ class UserController:
         else:
             try:
                 id = int(account[id])
-                user = User.objects.get(stir=id)
-                balance = AccountBalance.objects.get(user=user)
+                user = TgUser.objects.get(tg_id=id)
                 data = {
-                    "Foydalanuvchi": str(user.full_name),
-                    "Elektron pochta": str(user.email),
+                    "Phone number": str(user.tel),
+                    "Username": str(user.name),
                     "To'lov turi": "Hisob to'ldirish uchun",
-                    "Stir(INN)": str(user.stir),
-                    "Balans": str(balance.amount),
-                    "Telefon": str(user.phone)
+                    "Balance": str(user.balance),
                 }
                 if user.status == 3:
                     self.response_message = {
@@ -72,7 +69,7 @@ class UserController:
                 else:
                     self.response_message = {'allow': True, "additional": data}
                     return True
-            except User.DoesNotExist:
+            except TgUser.DoesNotExist:
                 self.response_message = {
                     "code": PaycomException.ERROR_INVALID_ACCOUNT,
                     "message": {

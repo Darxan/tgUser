@@ -95,9 +95,10 @@ class PaycomAPI:
                         Comment: If transaction's time is expired, 
                         cancel transaction and return error message code: -31008 
                     """
-                    self.json_content = self.response.error(code=Transactions.TRANSACTION_CAN_NOT_PERFORM,
-                                                            message='Transaction is expired.',
-                                                            data='timeout')
+                    self.json_content = self.response.error(
+                                                    code=Transactions.TRANSACTION_CAN_NOT_PERFORM,
+                                                    message='Transaction is expired.',
+                                                    data='timeout')
                 else:
                     """ 
                         Comment: If transaction's time is not expired, 
@@ -149,6 +150,11 @@ class PaycomAPI:
                     Comment: Return transaction details if transaction was completed
                 """
                 self.json_content = transaction.return_transaction_details(field='perform_time')
+                # self.json_content = self.response.error(
+                #     code=Transactions.TRANSACTION_CAN_NOT_PERFORM,
+                #     message='Transaction state is not valid.',
+                #     data=transaction.transaction.state)
+
             else:
                 self.json_content = self.response.error(code=Transactions.TRANSACTION_CAN_NOT_PERFORM,
                                                         message='Transaction state is not valid.',
@@ -175,7 +181,6 @@ class PaycomAPI:
                                                             message='Transaction can not be cancelled.',
                                                             data=transaction.transaction.state)
                 else:
-                    print("STATE_CANCELLED_AFTER_COMPLETE")
                     transaction.cancel_transaction(reason=self.request.params['reason'],
                                                    state=Transactions.STATE_CANCELLED_AFTER_COMPLETE)
                     self.json_content = transaction.return_transaction_details(field='cancel_time')

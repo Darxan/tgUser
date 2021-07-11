@@ -2,14 +2,10 @@ import json
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView
-
 
 from .utils.paycom.api import PaycomAPI
 from django.views import View
 from django.http import JsonResponse
-
-from ..user.models import TgUser
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -24,4 +20,3 @@ class PaycomView(View):
 
     def get(self, request):
         return JsonResponse(data={"message": " Bu url faqat post request qabul qiladi "})
-
